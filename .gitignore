@@ -224,3 +224,6 @@ __marimo__/
 
 # macOS
 .DS_Store
+
+# Raw data
+arcos_all.zip
