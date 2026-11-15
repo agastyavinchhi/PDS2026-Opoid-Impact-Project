@@ -128,11 +128,15 @@ BUYERS = [
 
 def filter_chunk(chunk):
     """Keep sales to patient-facing buyers in the 50 states + DC, with county and MME present."""
-    return chunk[
-        (chunk["TRANSACTION_CODE"] == "S")
-        & chunk["BUYER_BUS_ACT"].isin(BUYERS)
-        & chunk["BUYER_STATE"].isin(STATES)
-    ].dropna(subset=["BUYER_COUNTY", "MME"])
+    # Sales
+    chunk = chunk[chunk["TRANSACTION_CODE"] == "S"]
+    # Buyers
+    chunk = chunk[chunk["BUYER_BUS_ACT"].isin(BUYERS)]
+    # 49 states + DC
+    chunk = chunk[chunk["BUYER_STATE"].isin(STATES)]
+    # Drop rows missing county or MME
+    chunk = chunk.dropna(subset=["BUYER_COUNTY", "MME"])
+    return chunk
 
 
 def aggregate_chunk(chunk):
