@@ -1,10 +1,11 @@
 """
-Stream the ARCOS opioid shipments data in chunks and aggregate MME by state, county and year.
+This program streams the ARCOS opioid shipments data in chunks and aggregate MME by state, county and year.
+The output of this program is a parquet file, which is cleaned and will be merged with other datasets in the next step of the analysis.
 
 Dataset Filters:
   - Sales only (TRANSACTION_CODE == "S")
-  - Patient-facing buyers only (pharmacies, hospitals, practitioners, addiction treatment)
-  - 50 states + DC (drops Alaska, territories, military mail codes)
+  - Buyers only (pharmacies, hospitals, practitioners, addiction treatment)
+  - 50 total code: 49 states + DC (drops Alaska, territories, military codes)
   - Drop rows missing county or MME
 """
 
@@ -75,7 +76,7 @@ STATES = [
     "WV",
     "WI",
     "WY",
-]  # 50 states + DC, no AK
+]  # 49 states + DC
 
 BUYERS = [
     # Pharmacies
