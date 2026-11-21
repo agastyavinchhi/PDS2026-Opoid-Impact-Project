@@ -163,7 +163,12 @@ def build_shipments(zip_path):
             low_memory=False,
         )
         parts = [process_chunk(i, chunk) for i, chunk in enumerate(reader)]
-    return pd.concat(parts).groupby(level=[0, 1, 2]).sum().reset_index()
+    shipments = pd.concat(parts).groupby(level=[0, 1, 2]).sum().reset_index()
+    # Check that the year was parsed correctly from TRANSACTION_DATE
+    assert (
+        shipments["year"].between(2006, 2019).all()
+    ), "unexpected years in TRANSACTION_DATE"
+    return shipments
 
 
 def main():
