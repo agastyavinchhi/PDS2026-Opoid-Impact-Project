@@ -4,11 +4,16 @@ import pandas as pd
 
 
 # Folder with the raw CDC mortality files (kept outside the repo).
-# Pass your own path as an argument:
-# py mortality-dataset.py "C:\path\to\US_VitalStatistics"
-# If no argument is given, the default path below is used.
-DEFAULT_SOURCE_DIR = Path(r"C:\Users\Asus\Downloads\Duke MIDS\Practical Data Science\Final Project_pds\Dataset_2")
-SOURCE_DIR = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(DEFAULT_SOURCE_DIR)
+# The path must be passed as an argument, so the script runs on any machine:
+#     py mortality-dataset.py "<path-to-your-US_VitalStatistics-folder>"
+if len(sys.argv) < 2:
+    sys.exit(
+        "Error: please provide the path to the US_VitalStatistics folder.\n"
+        'Usage: py mortality-dataset.py "<path-to-your-US_VitalStatistics-folder>"'
+    )
+SOURCE_DIR = Path(sys.argv[1])
+if not SOURCE_DIR.is_dir():
+    sys.exit(f"Error: folder not found: {SOURCE_DIR}")
 
 # Drug poisoning (overdose) cause codes: D1 unintentional, D2 suicide,
 # D3 homicide, D4 undetermined. D9 ("All other drug-induced causes")
