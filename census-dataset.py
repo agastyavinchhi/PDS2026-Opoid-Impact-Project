@@ -1,24 +1,76 @@
+"""
+Census County Population Data Cleaning (2000–2019)
+
+This script processes U.S. Census Bureau county-level population
+estimates into a standardized county-year panel.
+
+Data sources:
+1. 2000–2010 Census Intercensal Population Estimates:
+   https://www2.census.gov/programs-surveys/popest/datasets/2000-2010/intercensal/county/co-est00int-tot.csv
+
+2. 2010–2019 Census Population Estimates:
+   https://www2.census.gov/programs-surveys/popest/datasets/2010-2019/counties/totals/co-est2019-alldata.csv
+
+Cleaning steps:
+- Keep county-level observations (SUMLEV = 50).
+- Exclude Alaska according to project instructions.
+- Construct standardized five-digit county FIPS codes.
+- Reshape annual population estimates into long format.
+- Use 2000–2009 from the earlier Census series and
+  2010–2019 from the later series.
+- Validate missing values, duplicates, FIPS, and population values.
+
+Output:
+    census_county_year.parquet
+
+Output columns:
+    county_fips, state_name, county_name, year, population
+
+Notes:
+- Historical FIPS changes exist for Shannon/Oglala Lakota
+  County and Bedford city.
+- The two Census estimation series contain different
+  population estimates for 2010.
+- Geographic harmonization will be addressed during
+  data integration.
+
+Usage:
+    python census-dataset.py [path-to-census-data-folder]
+
+Dependencies:
+    pandas, pyarrow
+"""
+
+import sys
 from pathlib import Path
 
 import pandas as pd
 
-# Project paths
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-RAW_DIR = PROJECT_ROOT / "data" / "raw"
-OUTPUT_DIR = PROJECT_ROOT / "data" / "processed"
+# Default to the project's local raw-data folder
+PROJECT_ROOT = Path(__file__).resolve().parent
+
+RAW_DIR = (
+    Path(sys.argv[1]).expanduser().resolve()
+    if len(sys.argv) > 1
+    else PROJECT_ROOT / "data" / "raw"
+)
+
+OUTPUT_DIR = PROJECT_ROOT
 
 
 def load_census_data():
-    """Load the two original Census population datasets."""
+    """Load Census population data using official filenames."""
     old = pd.read_csv(
-        RAW_DIR / "census_2000_2010.csv",
+        RAW_DIR / "co-est00int-tot.csv",
         encoding="latin1",
+        dtype={"STATE": str, "COUNTY": str},
         low_memory=False,
     )
 
     new = pd.read_csv(
-        RAW_DIR / "census_2010_2019.csv",
+        RAW_DIR / "co-est2019-alldata.csv",
         encoding="latin1",
+        dtype={"STATE": str, "COUNTY": str},
         low_memory=False,
     )
 
@@ -92,7 +144,7 @@ def main():
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-    output_path = OUTPUT_DIR / "census_population_clean.parquet"
+    output_path = OUTPUT_DIR / "census_county_year.parquet"
     population.to_parquet(output_path, index=False)
 
     print(f"Saved: {output_path}")
