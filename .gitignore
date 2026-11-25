@@ -225,6 +225,7 @@ __marimo__/
 # macOS
 .DS_Store
 
+
 # Census raw datasets
 data/raw/
 
@@ -234,3 +235,6 @@ notebook/
 # Python cache
 __pycache__/
 .ipynb_checkpoints/
+
+# Raw data
+arcos_all.zip
