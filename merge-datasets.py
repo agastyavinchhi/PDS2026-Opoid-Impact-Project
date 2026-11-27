@@ -10,7 +10,7 @@ Inputs (repo root):
 Steps:
   1. Give ARCOS counties a FIPS code by matching against
      the Census county list.
-  2. Use Census as the spine and left-join
+  2. Start from the Census data and left-join
      shipments and mortality onto it by county FIPS and year.
 """
 
@@ -57,7 +57,7 @@ def add_fips_to_shipments(shipments, census):
 
 
 def merge_panel(census, shipments, mortality):
-    """Census spine (2003-2019) with shipments and mortality left-joined on."""
+    """Left-join shipments and mortality onto Census county-years (2003-2019)."""
     panel = census[census["year"].between(2003, 2019)]
     panel = panel.merge(
         shipments, on=["county_fips", "year"], how="left", validate="1:1"
